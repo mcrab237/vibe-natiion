@@ -45,14 +45,13 @@ const MainPage = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <img src={backgroundImage} alt="Background" />
       {/* Optional gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 pointer-events-none" />
 
       {/* Main content container */}
       <div className="relative z-10 max-w-4xl w-full px-4 py-8">
         <h1 className="text-5xl font-bold mb-8 text-center text-white drop-shadow-lg">
-          Upcoming Music
+        Ma Musique
         </h1>
 
         {isLoading ? (
