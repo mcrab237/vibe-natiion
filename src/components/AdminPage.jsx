@@ -6,6 +6,7 @@ import { db, storage } from "../../firebaseConfig";
 const AdminPage = () => {
   const [backgroundImage, setBackgroundImage] = useState("");
   const [backgroundFile, setBackgroundFile] = useState(null);
+  const [pageTitle, setPageTitle] = useState("Ma Musique");
 
   // Each song: { title: string, songURL: string, tempFile?: File }
   const [songs, setSongs] = useState([{ title: "", songURL: "" }]);
@@ -19,6 +20,7 @@ const AdminPage = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setBackgroundImage(data.backgroundImageURL || "");
+        setPageTitle(data.pageTitle || "Ma Musique");
         // Make sure each song has "title" and "songURL".
         // We won't load any "tempFile" from Firestore, since that's only local.
         if (data.songs) {
@@ -89,6 +91,7 @@ const AdminPage = () => {
       await updateDoc(docRef, {
         backgroundImageURL: updatedBackgroundURL,
         songs: updatedSongs,
+        pageTitle: pageTitle,
       });
 
       // 4. Update local states after successful upload
@@ -136,6 +139,21 @@ const AdminPage = () => {
       </div>
 
       <div className="max-w-5xl mx-auto py-8 px-4 space-y-8">
+        {/* Add Page Title Card */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Page Title</h2>
+            <p className="text-gray-500 text-sm">Set your page's main title</p>
+          </div>
+          <input
+            type="text"
+            value={pageTitle}
+            onChange={(e) => setPageTitle(e.target.value)}
+            className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="Enter page title"
+          />
+        </div>
+
         {/* Background Image Card */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between mb-4">

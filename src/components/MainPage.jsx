@@ -5,19 +5,21 @@ import { db } from "../../firebaseConfig";
 const MainPage = () => {
   const [backgroundImage, setBackgroundImage] = useState("");
   const [songs, setSongs] = useState([]);
+  const [pageTitle, setPageTitle] = useState("Ma Musique");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const docRef = doc(db, "settings", "main"); // Adjust if needed
+        const docRef = doc(db, "settings", "main");
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
           setBackgroundImage(data.backgroundImageURL || "");
           setSongs(data.songs || []);
+          setPageTitle(data.pageTitle || "Ma Musique");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -25,8 +27,6 @@ const MainPage = () => {
         setIsLoading(false);
       }
     };
-
-    
 
     fetchData();
   }, []);
@@ -37,7 +37,7 @@ const MainPage = () => {
 
   return (
     <div
-      className="min-h-screen w-full flex flex-col items-center justify-center bg-fixed relative"
+      className="min-h-screen w-full flex flex-col items-center justify-center bg-fixed relative overflow-hidden"
       style={{
         backgroundImage: backgroundImage ? `url(${backgroundImage})` : "none",
         backgroundSize: "cover",
@@ -45,47 +45,43 @@ const MainPage = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Optional gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/40 pointer-events-none" />
+      {/* Enhanced gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/50 pointer-events-none" />
 
-      {/* Main content container */}
-      <div className="relative z-10 max-w-4xl w-full px-4 py-8">
-        <h1 className="text-5xl font-bold mb-8 text-center text-white drop-shadow-lg">
-        Ma Musique
+      {/* Main content container - made narrower and more compact */}
+      <div className="relative z-10 max-w-3xl w-full px-4 py-6">
+        <h1 className="text-4xl font-bold mb-6 text-center text-white drop-shadow-lg tracking-wider">
+          {pageTitle}
         </h1>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-48">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
           </div>
         ) : songs.length > 0 ? (
-          <div className="grid gap-6">
+          <div className="grid gap-4">
             {songs.map((song, index) => (
               <div
                 key={index}
-                className="bg-white/10 backdrop-blur-md rounded-xl p-6 transition-all duration-300 hover:scale-[1.02]"
+                className="bg-black/30 backdrop-blur-sm rounded-lg p-4 transition-all duration-300 hover:bg-black/40 hover:scale-[1.01] border border-white/10"
               >
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold text-white mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-xl font-medium text-white mb-1 truncate">
                       {song.title}
                     </h2>
-                    {/* If you have other properties like artist or duration */}
-                    {song.artist && (
-                      <p className="text-sm text-gray-200">
-                        Artist: {song.artist}
-                      </p>
-                    )}
-                    {song.duration && (
-                      <p className="text-sm text-gray-200">
-                        Duration: {song.duration}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2 text-xs text-gray-300">
+                      {song.artist && <span>{song.artist}</span>}
+                      {song.artist && song.duration && <span>•</span>}
+                      {song.duration && <span>{song.duration}</span>}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <audio controls className="w-full">
+                  <div className="flex-1 min-w-0">
+                    <audio
+                      controls
+                      className="w-full h-8 opacity-75 hover:opacity-100 transition-opacity"
+                    >
                       <source src={song.songURL} type="audio/mpeg" />
-                      Your browser does not support the audio element.
                     </audio>
                   </div>
                 </div>
@@ -93,8 +89,8 @@ const MainPage = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center bg-white/10 backdrop-blur-md rounded-xl p-8">
-            <p className="text-xl text-white">No songs available yet.</p>
+          <div className="text-center bg-black/30 backdrop-blur-sm rounded-lg p-6">
+            <p className="text-lg text-white/80">No songs available yet.</p>
           </div>
         )}
       </div>
